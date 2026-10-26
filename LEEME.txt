@@ -1,0 +1,56 @@
+MAGIC NIGHT - BASE DE DATOS (Cloudflare D1)
+==========================================
+
+Qué hace
+- Las hojas se guardan en una base de datos de Cloudflare (D1) llamada
+  "magic-night-hojas". Ya está creada y con su tabla lista.
+- Todos pueden VER las hojas. Solo quien tenga la clave de administrador puede
+  agregar o eliminar (botón "Administrar", al final de la página).
+- Los cambios se ven en vivo: cuando alguien agrega o elimina una hoja, quienes
+  ya tienen la página abierta la ven aparecer o desaparecer en unos 15 segundos,
+  sin recargar. (Se revisa solo mientras la pestaña está a la vista.)
+
+Archivos (todos van sueltos, SIN carpetas)
+  index.html       la página
+  worker.js        el servidor que lee y guarda las hojas
+  wrangler.jsonc   configuración (conecta la base de datos)
+  .assetsignore    evita que los archivos de código se publiquen como página
+  schema.sql       respaldo de la tabla (ya está creada, no hay que correrlo)
+
+PASO 1 - Subir los archivos a GitHub
+  1. Descomprime este zip. NO subas el zip: GitHub no lo abre.
+  2. En tu repositorio: "Add file" > "Upload files".
+  3. Arrastra los 6 archivos sueltos (index.html, worker.js, wrangler.jsonc,
+     .assetsignore, schema.sql y LEEME.txt). Si ya existen con el mismo nombre,
+     GitHub los reemplaza.
+  4. Pulsa "Commit changes".
+  5. Entra al repositorio y confirma que se vea .assetsignore. Si ves carpetas
+     "src" o "public", no las necesitas.
+
+PASO 2 - Poner la clave de administrador en Cloudflare
+  1. dash.cloudflare.com > Workers & Pages > tu proyecto
+     (seguimiento-magic-nigth-producci-n) > Settings.
+  2. Busca "Variables and Secrets" (las de ejecución, NO las de "Build") y pulsa Add.
+  3. Type: Secret.   Variable name: ADMIN_KEY   (exactamente así).
+     Value: la clave que tú elijas (mínimo 12 caracteres, mezcla letras y números).
+  4. Guarda y despliega.
+  Sin este paso la página se ve, pero nadie podrá agregar ni eliminar hojas.
+
+PASO 3 - Probar
+  1. Abre la página, pulsa "Administrar" (al final) y escribe tu clave.
+  2. Toca una regional, agrega una hoja y recarga la página: debe seguir ahí.
+  3. Ábrela desde otro teléfono: ven la hoja, pero no el formulario ni Eliminar.
+
+Si algo falla
+- La compilación falla por el nombre: el "name" de wrangler.jsonc debe ser igual
+  al nombre de tu proyecto en Cloudflare.
+- Dice "Falta configurar la clave de administrador": revisa el Paso 2 y vuelve a
+  desplegar.
+- Dice "Falta conectar la base de datos": en el proyecto > Settings > Bindings debe
+  aparecer DB conectada a magic-night-hojas.
+
+Seguridad
+- Comparte la clave solo con quien deba editar. Para cambiarla, edita el secreto
+  ADMIN_KEY en Cloudflare.
+- Las hojas y sus enlaces los ve cualquiera que abra la página. Revisa los
+  permisos de cada Google Sheet antes de agregarlo.
